@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (Html, button, div, text)
+import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as D
@@ -25,23 +26,24 @@ type Msg
   | GotItems (Result Http.Error (List String))
   | Increment
   | Decrement
+  | Reset
+initialState = { counter = 0, bookState = NotStarted, gotItems = Nothing }
+initialCmd = Http.get
+      { url = "https://elm-lang.org/assets/public-opinion.txt"
+      , expect = Http.expectString GotBook
+      }
 
 main =
     Browser.element { init = init, view = view, update = update, subscriptions = subscriptions }
 
 init : () -> (Model, Cmd Msg)
-init _ =
-  ( { counter = 0, bookState = NotStarted, gotItems = Nothing }
-  , Http.get
-      { url = "https://elm-lang.org/assets/public-opinion.txt"
-      , expect = Http.expectString GotBook
-      }
-  )
+init _ = ( initialState, initialCmd )
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     GetBook ->
+      Debug.log "Getting book!"
       ({model | bookState = Started}, getBook)
     Increment ->
       ({ model | counter = model.counter + 1 }, Cmd.none)
@@ -50,15 +52,26 @@ update msg model =
     GotBook x ->
       ({model | bookState = Finished x}, Cmd.none)
     GotItems _ -> (model, Cmd.none)
+    Reset ->
+      (initialState, initialCmd)
+
+viewBookState : BookState -> Html Msg
+viewBookState bs =
+  case bs of
+      NotStarted -> button [ onClick GetBook ] [ text "GetBook" ]
+      Started -> div [] []
+      Finished (Ok t) -> div [] [text t]
+      Finished (Err e) -> div [ class "error"][ text (errorToString e)]
+
 
 view : Model -> Html Msg
 view model =
   div []
-    [ div [] [ text (getBookText model) ]
+    [ div [] [ text (getBookStateText model.bookState) ]
     , button [ onClick Decrement ] [ text "-" ]
     , div [] [ text (String.fromInt model.counter) ]
     , button [ onClick Increment ] [ text "+" ]
-    , button [ onClick GetBook ] [ text "GetBook" ]
+
     ]
 
 subscriptions : Model -> Sub Msg
@@ -79,9 +92,9 @@ fetchItems =
     , expect = Http.expectJson GotItems (D.list (D.field "name" D.string))
     }
 
-getBookText : Model -> String
-getBookText model =
-  case model.bookState of
+getBookStateText : BookState -> String
+getBookStateText bs =
+  case bs of
     NotStarted -> "Nothing"
     Started -> "Fetching..."
     -- Finished (Result.Ok t) -> String.join "," t
