@@ -1,11 +1,16 @@
 module Main exposing (..)
 
+import Dict
+
 import Browser
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as D
+import Json.Decode exposing (Decoder)
+
+-- chaining https://allo-media.net/en/tech/learning/elm/2018/02/05/chaining-http-requests-in-elm.html
 
 type BookState
   = NotStarted
@@ -20,15 +25,25 @@ type alias Model =
     , gotItems: Maybe (Result Http.Error (List String))
   }
 
+type alias GoodInfo = {
+  cost: Int
+  , soldBy: String
+  }
+
 type Msg
   = GetBook
   | GotBook (Result Http.Error String)
   | GotItems (Result Http.Error (List String))
+  | GotEconomy (Result Http.Error (Dict.Dict String GoodInfo))
   | Increment
   | Decrement
   | Reset
 initialState = { counter = 0, bookState = NotStarted, gotItems = Nothing }
-initialCmd = Cmd.none
+initialCmd = Http.get {
+  url = "json/economy.json"
+  , expect = Http.expectJson GotEconomy economyDecoder
+    -- , expect = Http.expectJson GotItems (D.list (D.field "name" D.string))
+  }
 main =
     Browser.element { init = init, view = view, update = update, subscriptions = subscriptions }
 
@@ -39,7 +54,7 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     GetBook ->
-      Debug.log "Getting book!"
+      Debug.log "Getting book!" -- https://riptutorial.com/elm/topic/2845/debugging
       ({model | bookState = Started}, getBook)
     Increment ->
       ({ model | counter = model.counter + 1 }, Cmd.none)
@@ -48,6 +63,8 @@ update msg model =
     GotBook x ->
       ({model | bookState = Finished x}, Cmd.none)
     GotItems _ -> (model, Cmd.none)
+    -- TODO: implementation
+    GotEconomy v -> (model, Cmd.none)
     Reset ->
       (initialState, initialCmd)
 
@@ -62,7 +79,7 @@ viewBookState bs =
       Finished (Ok t) ->
         div [] [  btnFetchBook
                   , text t ]
-      Finished (Err e) -> div [ class "error"][ text (errorToString e)]
+      Finished (Err e) -> div [ class "error"][ text (errorToString e)] -- https://elmprogramming.com/model-view-update-part-2.html
 
 
 view : Model -> Html Msg
@@ -99,7 +116,7 @@ getBookStateText bs =
     NotStarted -> "Nothing"
     Started -> "Fetching..."
     -- Finished (Result.Ok t) -> String.join "," t
-    Finished (Result.Ok t) -> "Finished"
+    Finished (Result.Ok _) -> "Finished"
     Finished (Result.Err e) -> errorToString e
 
 errorToString : Http.Error -> String
@@ -119,3 +136,15 @@ errorToString error =
             "Unknown error"
         Http.BadBody errorMessage ->
             errorMessage
+
+-- https://package.elm-lang.org/packages/elm/json/latest/Json.Decode
+
+decodeGoodInfo: Decoder GoodInfo
+decodeGoodInfo =
+  D.map2 GoodInfo
+    (D.field "Cost" D.int)
+    (D.field "SoldBy" D.string)
+
+economyDecoder : Decoder (Dict.Dict String GoodInfo)
+economyDecoder =
+  D.dict decodeGoodInfo

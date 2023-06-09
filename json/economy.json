@@ -1,0 +1,542 @@
+{
+    "Acid": {
+      "Cost": 402,
+      "SoldBy": "Chemical Factory, Rubber Factory"
+    },
+    "Acron Drug": {
+      "Cost": 6000,
+      "SoldBy": null
+    },
+    "Adhesive": {
+      "Cost": 402,
+      "SoldBy": "Chemical Factory"
+    },
+    "Aluminum": {
+      "Cost": 200,
+      "SoldBy": "Aluminum Mine"
+    },
+    "Ammunition": {
+      "Cost": 3786,
+      "SoldBy": "Ammunition Factory"
+    },
+    "Ammunition L": {
+      "Cost": 422,
+      "SoldBy": "Ammunition Factory"
+    },
+    "Ammunition M": {
+      "Cost": 422,
+      "SoldBy": "Ammunition Factory"
+    },
+    "Ammunition S": {
+      "Cost": 422,
+      "SoldBy": "Ammunition Factory"
+    },
+    "Antigrav Generator": {
+      "Cost": 71632,
+      "SoldBy": "Antigrav Generator Factory"
+    },
+    "Antigrav Unit": {
+      "Cost": 25391,
+      "SoldBy": "Antigrav Unit Factory"
+    },
+    "Beer": {
+      "Cost": 216,
+      "SoldBy": "Brewery"
+    },
+    "Bio Gas": {
+      "Cost": 213,
+      "SoldBy": "Cattle Ranch, Fish Farm, Sheep Ranch"
+    },
+    "Body Armor": {
+      "Cost": 95906,
+      "SoldBy": "Body Armor Factory"
+    },
+    "Book": {
+      "Cost": 319,
+      "SoldBy": "Book Factory"
+    },
+    "Carbon": {
+      "Cost": 423,
+      "SoldBy": "Carbon Extractor, Planetary Trading Post"
+    },
+    "Cattle": {
+      "Cost": 254,
+      "SoldBy": "Cattle Ranch"
+    },
+    "Chemicals": {
+      "Cost": 402,
+      "SoldBy": "Chemical Factory"
+    },
+    "Chlorine": {
+      "Cost": 150,
+      "SoldBy": "Gas Collector"
+    },
+    "Clothes": {
+      "Cost": 102,
+      "SoldBy": "Clothes Factory"
+    },
+    "Coal": {
+      "Cost": 200,
+      "SoldBy": "Coal Mine"
+    },
+    "Cocoa": {
+      "Cost": 87,
+      "SoldBy": "Cocoa Farm"
+    },
+    "Coffee": {
+      "Cost": 187,
+      "SoldBy": "Coffee Farm"
+    },
+    "Computation Mainframe": {
+      "Cost": 37940,
+      "SoldBy": "Computation Mainframe Factory"
+    },
+    "Conductor": {
+      "Cost": 168,
+      "SoldBy": "Conductor Factory"
+    },
+    "Coolant": {
+      "Cost": 402,
+      "SoldBy": "Chemical Factory"
+    },
+    "Copper": {
+      "Cost": 350,
+      "SoldBy": "Copper Mine, Planetary Trading Post"
+    },
+    "Corn": {
+      "Cost": 28,
+      "SoldBy": "Corn Farm"
+    },
+    "Crystal": {
+      "Cost": 190,
+      "SoldBy": "Crystal Farm"
+    },
+    "Dairy": {
+      "Cost": 19,
+      "SoldBy": "Dairy Farm"
+    },
+    "Diamond": {
+      "Cost": 750,
+      "SoldBy": "Trading Post"
+    },
+    "Display": {
+      "Cost": 7858,
+      "SoldBy": "Computer Component Factory, Display Factory"
+    },
+    "Drill": {
+      "Cost": 20443,
+      "SoldBy": "Drill Factory"
+    },
+    "Drone": {
+      "Cost": 7754,
+      "SoldBy": "Drone Factory"
+    },
+    "Electro Magnet": {
+      "Cost": 483,
+      "SoldBy": "Electro Magnet Factory"
+    },
+    "Electromagnetic Charge": {
+      "Cost": 13985,
+      "SoldBy": "Electromagnetic Charge Factory"
+    },
+    "Electron Accelerator": {
+      "Cost": 125431,
+      "SoldBy": "Accelerator Factory"
+    },
+    "Energy Cell": {
+      "Cost": 50,
+      "SoldBy": "Solar Power Plant"
+    },
+    "Energy Container": {
+      "Cost": 1087,
+      "SoldBy": "Energy Container Factory"
+    },
+    "Energy Generator": {
+      "Cost": 15957,
+      "SoldBy": "Energy Generator Factory"
+    },
+    "Energy Inverter": {
+      "Cost": 1277,
+      "SoldBy": "Energy Inverter Factory, Turret Factory (as of 1.0)"
+    },
+    "Energy Tube": {
+      "Cost": 2895,
+      "SoldBy": "Energy Tube Factory"
+    },
+    "Explosive Charge": {
+      "Cost": 1423,
+      "SoldBy": "Explosive Charge Factory"
+    },
+    "Fabric": {
+      "Cost": 91,
+      "SoldBy": "Fabric Factory, Sheep Ranch"
+    },
+    "Fertilizer": {
+      "Cost": 319,
+      "SoldBy": "Fertilizer Factory"
+    },
+    "Fish": {
+      "Cost": 152,
+      "SoldBy": "Fish Farm"
+    },
+    "Fluorine": {
+      "Cost": 250,
+      "SoldBy": "Gas Collector"
+    },
+    "Food": {
+      "Cost": 300,
+      "SoldBy": "Food Factory"
+    },
+    "Food Bar": {
+      "Cost": 223,
+      "SoldBy": "Food Bar Factory"
+    },
+    "Force Generator": {
+      "Cost": 49576,
+      "SoldBy": "Force Generator Factory"
+    },
+    "Fruit": {
+      "Cost": 56,
+      "SoldBy": "Fruit Farm"
+    },
+    "Fuel": {
+      "Cost": 1232,
+      "SoldBy": "Fuel Factory"
+    },
+    "Fungus": {
+      "Cost": 46,
+      "SoldBy": "Fungus Farm"
+    },
+    "Fusion Core": {
+      "Cost": 5114,
+      "SoldBy": "Fusion Core Factory"
+    },
+    "Fusion Generator": {
+      "Cost": 39553,
+      "SoldBy": "Fusion Generator Factory"
+    },
+    "Gauss Rail": {
+      "Cost": 7735,
+      "SoldBy": "Gauss Rail Factory"
+    },
+    "Gems": {
+      "Cost": 400,
+      "SoldBy": "Planetary Trading Post"
+    },
+    "Glass": {
+      "Cost": 182,
+      "SoldBy": "Glass Manufacturer"
+    },
+    "Gold": {
+      "Cost": 600,
+      "SoldBy": "Noble Metal Mine, Planetary Trading Post"
+    },
+    "Gun": {
+      "Cost": 1232,
+      "SoldBy": "Gun Factory"
+    },
+    "Helium": {
+      "Cost": 50,
+      "SoldBy": "Gas Collector"
+    },
+    "High Capacity Lens": {
+      "Cost": 4689,
+      "SoldBy": "High Capacity Lens Factory"
+    },
+    "High Pressure Tube": {
+      "Cost": 1650,
+      "SoldBy": "High Pressure Tube Factory"
+    },
+    "Hydrogen": {
+      "Cost": 150,
+      "SoldBy": "Gas Collector"
+    },
+    "Industrial Tesla Coil": {
+      "Cost": 10314,
+      "SoldBy": "Tesla Coil Factory"
+    },
+    "Jewelry": {
+      "Cost": 1260,
+      "SoldBy": "Jewelry Manufacturer"
+    },
+    "Laser Compressor": {
+      "Cost": 6577,
+      "SoldBy": "Laser Compressor Factory"
+    },
+    "Laser Head": {
+      "Cost": 4690,
+      "SoldBy": "Laser Head Factory"
+    },
+    "Laser Modulator": {
+      "Cost": 16742,
+      "SoldBy": "Laser Modulator Factory"
+    },
+    "Lead": {
+      "Cost": 200,
+      "SoldBy": "Lead Mine, Planetary Trading Post"
+    },
+    "Leather": {
+      "Cost": 37,
+      "SoldBy": "Dairy Farm, Meat Factory"
+    },
+    "Liquor": {
+      "Cost": 1867,
+      "SoldBy": "Distillery"
+    },
+    "Luxury Food": {
+      "Cost": 6452,
+      "SoldBy": "Luxury Food Factory"
+    },
+    "Meat": {
+      "Cost": 37,
+      "SoldBy": "Meat Factory"
+    },
+    "Medical Supplies": {
+      "Cost": 3006,
+      "SoldBy": "Medical Supplies Factory"
+    },
+    "Metal Plate": {
+      "Cost": 792,
+      "SoldBy": "Metal Plate Factory"
+    },
+    "Microchip": {
+      "Cost": 896,
+      "SoldBy": "Microchip Factory"
+    },
+    "Military Tesla Coil": {
+      "Cost": 10314,
+      "SoldBy": "Tesla Coil Factory"
+    },
+    "Mineral": {
+      "Cost": 500,
+      "SoldBy": "Mineral Extractor, Planetary Trading Post"
+    },
+    "Mining Robot": {
+      "Cost": 145977,
+      "SoldBy": "Mining Robot Factory"
+    },
+    "Morn Drug": {
+      "Cost": 5000,
+      "SoldBy": null
+    },
+    "Nanobot": {
+      "Cost": 1338,
+      "SoldBy": "Nanobot Factory"
+    },
+    "Neon": {
+      "Cost": 200,
+      "SoldBy": "Gas Collector"
+    },
+    "Neutron Accelerator": {
+      "Cost": 125431,
+      "SoldBy": "Accelerator Factory"
+    },
+    "Nitrogen": {
+      "Cost": 40,
+      "SoldBy": "Gas Collector"
+    },
+    "Oil": {
+      "Cost": 490,
+      "SoldBy": "Oil Refinery"
+    },
+    "Ore": {
+      "Cost": 70,
+      "SoldBy": "Ore Mine, Planetary Trading Post"
+    },
+    "Oxygen": {
+      "Cost": 80,
+      "SoldBy": "Cocoa Farm, Coffee Farm, Corn Farm, Fruit Farm, Gas Collector, Plant Farm, Potato Farm, Rice Farm, Spices Farm, Tea Farm, Vegetable Farm, Wheat Farm, Wood Farm"
+    },
+    "Paint": {
+      "Cost": 481,
+      "SoldBy": "Paint Manufacturer"
+    },
+    "Paper": {
+      "Cost": 46,
+      "SoldBy": "Paper Factory"
+    },
+    "Plankton": {
+      "Cost": 50,
+      "SoldBy": "Fish Farm, Plankton Collector"
+    },
+    "Plant": {
+      "Cost": 14,
+      "SoldBy": "Plant Farm"
+    },
+    "Plasma Cell": {
+      "Cost": 174,
+      "SoldBy": "Plasma Cell Factory"
+    },
+    "Plastic": {
+      "Cost": 137,
+      "SoldBy": "Plastic Manufacturer"
+    },
+    "Platinum": {
+      "Cost": 750,
+      "SoldBy": "Noble Metal Mine"
+    },
+    "Potato": {
+      "Cost": 24,
+      "SoldBy": "Potato Farm"
+    },
+    "Power Unit": {
+      "Cost": 1211,
+      "SoldBy": "Power Unit Factory"
+    },
+    "Processor": {
+      "Cost": 7858,
+      "SoldBy": "Computer Component Factory, Processor Factory"
+    },
+    "Protein": {
+      "Cost": 34,
+      "SoldBy": "Protein Factory"
+    },
+    "Proton Accelerator": {
+      "Cost": 125431,
+      "SoldBy": "Accelerator Factory"
+    },
+    "Raw Oil": {
+      "Cost": 150,
+      "SoldBy": "Oil Rig, Planetary Trading Post"
+    },
+    "Rice": {
+      "Cost": 15,
+      "SoldBy": "Rice Farm"
+    },
+    "Rocket": {
+      "Cost": 11250,
+      "SoldBy": "Rocket Factory"
+    },
+    "Rubber": {
+      "Cost": 686,
+      "SoldBy": "Rubber Factory"
+    },
+    "Satellite": {
+      "Cost": 65714,
+      "SoldBy": "Satellite Factory"
+    },
+    "Scrap Metal": {
+      "Cost": 25,
+      "SoldBy": "Drill Factory, Drone Factory, Laser Compressor Factory, Mining Robot Factory, Satellite Factory, Scrap Metal Trader, Teleporter Factory, Vehicle Factory, War Robot Factory, Warhead Factory"
+    },
+    "Semi Conductor": {
+      "Cost": 129,
+      "SoldBy": "Semi Conductor Manufacturer"
+    },
+    "Servo": {
+      "Cost": 1387,
+      "SoldBy": "Servo Factory"
+    },
+    "Sheep": {
+      "Cost": 130,
+      "SoldBy": "Sheep Ranch"
+    },
+    "Silicon": {
+      "Cost": 500,
+      "SoldBy": "Silicon Mine, Planetary Trading Post"
+    },
+    "Silver": {
+      "Cost": 300,
+      "SoldBy": "Noble Metal Mine"
+    },
+    "Slave": {
+      "Cost": 15000,
+      "SoldBy": null
+    },
+    "Solar Cell": {
+      "Cost": 469,
+      "SoldBy": "Solar Cell Factory"
+    },
+    "Solar Panel": {
+      "Cost": 6858,
+      "SoldBy": "Solar Panel Factory"
+    },
+    "Solvent": {
+      "Cost": 402,
+      "SoldBy": "Chemical Factory"
+    },
+    "Spices": {
+      "Cost": 268,
+      "SoldBy": "Spices Farm"
+    },
+    "Steel": {
+      "Cost": 277,
+      "SoldBy": "Steel Factory"
+    },
+    "Steel Tube": {
+      "Cost": 704,
+      "SoldBy": "Steel Tube Factory"
+    },
+    "Targeting Card": {
+      "Cost": 11873,
+      "SoldBy": "Computer Component Factory, Targeting Card Factory"
+    },
+    "Targeting System": {
+      "Cost": 29674,
+      "SoldBy": "Targeting System Factory"
+    },
+    "Tea": {
+      "Cost": 37,
+      "SoldBy": "Tea Farm"
+    },
+    "Teleporter": {
+      "Cost": 39365,
+      "SoldBy": "Teleporter Factory"
+    },
+    "Tools": {
+      "Cost": 214,
+      "SoldBy": "Tools Factory"
+    },
+    "Toxic Waste": {
+      "Cost": 15,
+      "SoldBy": "Ammunition Factory, Fertilizer Factory, Fuel Factory, Fungus Farm, Laser Head Factory, Paint Manufacturer, Rubber Factory"
+    },
+    "Transformator": {
+      "Cost": 209,
+      "SoldBy": "Transformator Factory"
+    },
+    "Turbine": {
+      "Cost": 16729,
+      "SoldBy": "Turbine Factory"
+    },
+    "Vegetable": {
+      "Cost": 32,
+      "SoldBy": "Vegetable Farm"
+    },
+    "Vehicle": {
+      "Cost": 77087,
+      "SoldBy": "Vehicle Factory"
+    },
+    "War Robot": {
+      "Cost": 92186,
+      "SoldBy": "War Robot Factory"
+    },
+    "Warhead": {
+      "Cost": 5630,
+      "SoldBy": "Warhead Factory"
+    },
+    "Water": {
+      "Cost": 20,
+      "SoldBy": "Ice Mine, Water Collector"
+    },
+    "Wheat": {
+      "Cost": 23,
+      "SoldBy": "Wheat Farm"
+    },
+    "Wine": {
+      "Cost": 182,
+      "SoldBy": "Wine Factory"
+    },
+    "Wire": {
+      "Cost": 95,
+      "SoldBy": "Wire Manufacturer"
+    },
+    "Wood": {
+      "Cost": 350,
+      "SoldBy": "Wood Farm"
+    },
+    "Zinc": {
+      "Cost": 250,
+      "SoldBy": "Zinc Mine"
+    }
+  }
