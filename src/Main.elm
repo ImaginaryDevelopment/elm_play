@@ -28,11 +28,7 @@ type Msg
   | Decrement
   | Reset
 initialState = { counter = 0, bookState = NotStarted, gotItems = Nothing }
-initialCmd = Http.get
-      { url = "https://elm-lang.org/assets/public-opinion.txt"
-      , expect = Http.expectString GotBook
-      }
-
+initialCmd = Cmd.none
 main =
     Browser.element { init = init, view = view, update = update, subscriptions = subscriptions }
 
@@ -55,12 +51,17 @@ update msg model =
     Reset ->
       (initialState, initialCmd)
 
+btnFetchBook : Html Msg
+btnFetchBook = button [ onClick GetBook ] [ text "GetBook" ]
+
 viewBookState : BookState -> Html Msg
 viewBookState bs =
   case bs of
-      NotStarted -> button [ onClick GetBook ] [ text "GetBook" ]
+      NotStarted -> btnFetchBook
       Started -> div [] []
-      Finished (Ok t) -> div [] [text t]
+      Finished (Ok t) ->
+        div [] [  btnFetchBook
+                  , text t ]
       Finished (Err e) -> div [ class "error"][ text (errorToString e)]
 
 
@@ -71,7 +72,7 @@ view model =
     , button [ onClick Decrement ] [ text "-" ]
     , div [] [ text (String.fromInt model.counter) ]
     , button [ onClick Increment ] [ text "+" ]
-
+    , viewBookState model.bookState
     ]
 
 subscriptions : Model -> Sub Msg
@@ -98,7 +99,7 @@ getBookStateText bs =
     NotStarted -> "Nothing"
     Started -> "Fetching..."
     -- Finished (Result.Ok t) -> String.join "," t
-    Finished (Result.Ok t) -> t
+    Finished (Result.Ok t) -> "Finished"
     Finished (Result.Err e) -> errorToString e
 
 errorToString : Http.Error -> String
