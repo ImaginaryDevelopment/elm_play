@@ -156,7 +156,8 @@ viewMenu model =
 view : Model -> Html Msg
 view model =
   div []
-    [ div [] [ text (getBookStateText model.bookState) ]
+    [ viewMenu model
+    , div [] [ text (getBookStateText model.bookState) ]
     , button [ onClick (CounterMsg Decrement) ] [ text "-" ]
     , div [] [ text (String.fromInt model.counter) ]
     , button [ onClick (CounterMsg Increment) ] [ text "+" ]
