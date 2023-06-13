@@ -1,6 +1,8 @@
 module Main exposing (..)
 
 -- import Html exposing (Html, button, div, text, ul, li, a)
+-- see also https://github.com/rofrol/awesome-elm-gamedev
+-- and https://skillmapper.com/courses/computer-science/engineering/learn-elm-functional-programming-and-make-22--udemy-8a42e4b6ba12a
 
 import Avorion
 import Book

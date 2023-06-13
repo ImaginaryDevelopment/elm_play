@@ -2,6 +2,8 @@ module Avorion exposing (Economy, Model, Msg, init, update, view)
 
 import Dict
 import Html exposing (..)
+import Html.Attributes exposing (href)
+import Html.Events exposing (onClick)
 import Http
 import Json.Decode as D exposing (Decoder)
 import Json.Encode as Encode
@@ -14,8 +16,15 @@ type alias GoodInfo =
     }
 
 
+type MenuMsg
+    = GoRaw
+    | GoTable
+    | GoInteractive
+
+
 type Msg
     = GotEconomy (HttpResult (Dict.Dict String GoodInfo))
+    | MenuMsg MenuMsg
 
 
 type alias Economy =
@@ -31,12 +40,13 @@ type Display
 type alias Model =
     { economy : HttpState Economy
     , display : Display
+    , showDollar : Bool
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init () =
-    ( { economy = Nothing, display = Raw }, initCmd )
+    ( { economy = Nothing, display = Raw, showDollar = True }, initCmd )
 
 
 initCmd : Cmd Msg
@@ -44,8 +54,6 @@ initCmd =
     Http.get
         { url = "../json/economy.json" -- reactor assumes /src root
         , expect = Http.expectJson GotEconomy economyDecoder
-
-        -- , expect = Http.expectJson GotItems (D.list (D.field "name" D.string))
         }
 
 
@@ -59,6 +67,73 @@ update msg model =
             in
             ( { model | economy = Just httpRes }, Cmd.none )
 
+        MenuMsg GoInteractive ->
+            ( { model | display = Interactive }, Cmd.none )
+
+        MenuMsg GoTable ->
+            ( { model | display = Table }, Cmd.none )
+
+        MenuMsg GoRaw ->
+            ( { model | display = Raw }, Cmd.none )
+
+
+viewMenu : Display -> Html.Html Msg
+viewMenu display =
+    div []
+        [ ul []
+            [ -- li [] [ a [href "#", onClick (MenuMsg GoCounter)][text "Counter"]]
+              li [] [ createMenu (display == Interactive) GoInteractive "Interactive" ]
+            , li [] [ createMenu (display == Table) GoTable "Table" ]
+            , li [] [ createMenu (display == Raw) GoRaw "Raw" ] -- ooo baby I like it raw - Shimmy Ya
+            ]
+        ]
+
+
+viewBody : Model -> Economy -> Html.Html Msg
+viewBody model e =
+    case model.display of
+        Raw ->
+            pre []
+                [ -- it appears there's no reflection in elm?
+                  Encode.encode 0 (encodeEconomy e)
+                    |> text
+                ]
+
+        Table ->
+            table []
+                [ thead []
+                    [ tr []
+                        [ th [] [ text "Name" ]
+                        , th [] [ text "Cost" ]
+                        , th [] [ text "Sold By" ]
+                        ]
+                    ]
+                , tbody
+                    []
+                    (e
+                        |> Dict.toList
+                        |> List.map
+                            (\( k, v ) ->
+                                tr []
+                                    [ td [] [ text k ]
+                                    , td []
+                                        [ text
+                                            (if model.showDollar then
+                                                formatMoney v.cost
+
+                                             else
+                                                formatInt v.cost
+                                            )
+                                        ]
+                                    , td [] [ v.soldBy |> Maybe.withDefault "" |> text ]
+                                    ]
+                            )
+                    )
+                ]
+
+        Interactive ->
+            div [] []
+
 
 view : Model -> Html.Html Msg
 view model =
@@ -71,11 +146,8 @@ view model =
 
         Just (Ok ec) ->
             div []
-                [ pre []
-                    [ -- it appears there's no reflection in elm?
-                      Encode.encode 0 (encodeEconomy ec)
-                        |> text
-                    ]
+                [ viewMenu model.display
+                , viewBody model ec
                 ]
 
 
@@ -119,3 +191,12 @@ decodeGoodInfo =
 economyDecoder : Decoder (Dict.Dict String GoodInfo)
 economyDecoder =
     D.dict decodeGoodInfo
+
+
+createMenu : Bool -> MenuMsg -> String -> Html Msg
+createMenu isSelected msg title =
+    if isSelected then
+        a [ href "#" ] [ text title ]
+
+    else
+        a [ href "#", onClick (MenuMsg msg) ] [ text title ]

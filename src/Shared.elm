@@ -1,6 +1,7 @@
 module Shared exposing (..)
 
 import Http
+import List
 
 
 type alias HttpResult value =
@@ -34,3 +35,31 @@ errorToString error =
 
         Http.BadBody errorMessage ->
             errorMessage
+
+
+splitAt : Int -> List a -> List (List a)
+splitAt i list =
+    case List.take i list of
+        [] ->
+            []
+
+        listHead ->
+            listHead :: splitAt i (List.drop i list)
+
+
+formatInt : Int -> String
+formatInt x =
+    x
+        |> String.fromInt
+        |> String.toList
+        |> List.map String.fromChar
+        |> List.reverse
+        |> splitAt 3
+        |> List.map (List.reverse >> String.join "")
+        |> List.reverse
+        |> String.join ","
+
+
+formatMoney : Int -> String
+formatMoney x =
+    "$" ++ formatInt x
