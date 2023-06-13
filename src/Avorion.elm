@@ -8,6 +8,7 @@ import Http
 import Json.Decode as D exposing (Decoder)
 import Json.Encode as Encode
 import Shared exposing (..)
+import UIHelpers
 
 
 type alias GoodInfo =
@@ -171,14 +172,14 @@ encodeGoodInfo gi =
         ]
 
 
-
--- https://package.elm-lang.org/packages/elm/json/latest/Json.Decode
-
-
 encodeEconomy : Economy -> Encode.Value
 encodeEconomy ec =
     -- https://package.elm-lang.org/packages/elm/json/latest/Json.Encode
     Encode.dict identity encodeGoodInfo ec
+
+
+
+-- https://package.elm-lang.org/packages/elm/json/latest/Json.Decode
 
 
 decodeGoodInfo : Decoder GoodInfo
@@ -195,8 +196,4 @@ economyDecoder =
 
 createMenu : Bool -> MenuMsg -> String -> Html Msg
 createMenu isSelected msg title =
-    if isSelected then
-        a [ href "#" ] [ text title ]
-
-    else
-        a [ href "#", onClick (MenuMsg msg) ] [ text title ]
+    UIHelpers.createMenu MenuMsg msg title isSelected
