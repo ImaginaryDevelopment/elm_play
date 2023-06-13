@@ -3,12 +3,15 @@ module Main exposing (..)
 import Dict
 
 import Browser
-import Html exposing (Html, button, div, text, ul, li, a)
+-- import Html exposing (Html, button, div, text, ul, li, a)
+import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as D
 import Json.Decode exposing (Decoder)
+import Html exposing (p)
+import Json.Encode as Encode
 -- import Json.Encode
 
 -- chaining https://allo-media.net/en/tech/learning/elm/2018/02/05/chaining-http-requests-in-elm.html
@@ -28,10 +31,21 @@ type alias HttpState value = Maybe (HttpResult value)
 
 type alias GoodInfo = {
   cost: Int
-  , soldBy: String
+  , soldBy: Maybe String
   }
 
+encodeGoodInfo : GoodInfo -> Encode.Value
+encodeGoodInfo gi =
+  Encode.object
+    [ ("cost", Encode.int gi.cost)
+    , ("soldBy", gi.soldBy |> Maybe.withDefault "" |> Encode.string)
+    ]
 type alias Economy = Dict.Dict String GoodInfo
+
+encodeEconomy : Economy -> Encode.Value
+encodeEconomy ec = -- https://package.elm-lang.org/packages/elm/json/latest/Json.Encode
+  Encode.dict identity encodeGoodInfo ec
+
 
 type alias Model =
   { counter : Int
@@ -145,23 +159,65 @@ viewBookState bs =
         div [] [  btnFetchBook
                   , text t ]
       Finished (Err e) -> div [ class "error"][ text (errorToString e)] -- https://elmprogramming.com/model-view-update-part-2.html
+
+createMenu isSelected msg title =
+  if isSelected then
+    a [href "#"] [text title]
+  else
+    a [href "#", onClick (MenuMsg msg)][text title]
+
 viewMenu : Model -> Html Msg
 viewMenu model =
   div [][
     ul [] [
-      li [] [ a [href "#", onClick (MenuMsg GoCounter)][text "Counter"]]
+      -- li [] [ a [href "#", onClick (MenuMsg GoCounter)][text "Counter"]]
+      li [] [ createMenu (model.display == CounterSect) GoCounter "Counter" ]
+      , li [] [ createMenu (model.display == BookSect) GoBook "Book"]
+      , li [] [ createMenu (model.display == AvorSect) GoAvorion "Avorion"]
     ]
   ]
 
+viewBook : Model -> Html Msg
+viewBook model =
+  div []
+    [
+      div [] [ text (getBookStateText model.bookState) ]
+      , viewBookState model.bookState
+    ]
+viewCounter : Model -> Html Msg
+viewCounter model =
+  div [] [
+      button [ onClick (CounterMsg Decrement) ] [ text "-" ]
+      , div [] [ text (String.fromInt model.counter) ]
+      , button [ onClick (CounterMsg Increment) ] [ text "+" ]
+  ]
+
+viewAvor : Model -> Html Msg
+viewAvor model =
+  case model.economy of
+      Nothing ->
+        div [] [ text "No Economy loaded"]
+      Just (Err e) -> div [] [errorToString e |> text]
+      Just (Ok ec) ->
+        div [] [
+          pre [] [ -- it appears there's no reflection in elm?
+            Encode.encode 0 (encodeEconomy ec)
+            |> text
+          ]
+        ]
 view : Model -> Html Msg
 view model =
+  let
+    subv =
+      (case model.display of
+        BookSect -> viewBook model
+        CounterSect -> viewCounter model
+        AvorSect -> viewAvor model
+      )
+  in
   div []
     [ viewMenu model
-    , div [] [ text (getBookStateText model.bookState) ]
-    , button [ onClick (CounterMsg Decrement) ] [ text "-" ]
-    , div [] [ text (String.fromInt model.counter) ]
-    , button [ onClick (CounterMsg Increment) ] [ text "+" ]
-    , viewBookState model.bookState
+      , subv
     ]
 
 subscriptions : Model -> Sub Msg
@@ -215,7 +271,7 @@ decodeGoodInfo: Decoder GoodInfo
 decodeGoodInfo =
   D.map2 GoodInfo
     (D.field "Cost" D.int)
-    (D.field "SoldBy" D.string)
+    (D.field "SoldBy" (D.maybe D.string))
 
 economyDecoder : Decoder (Dict.Dict String GoodInfo)
 economyDecoder =
