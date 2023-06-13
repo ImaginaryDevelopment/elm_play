@@ -67,12 +67,9 @@ getBook =
         }
 
 
-
--- currently unused
-
-
 fetchItems : Cmd Msg
 fetchItems =
+    -- currently unused
     Http.post
         { url = "https://example.com/items.json"
         , body = Http.emptyBody

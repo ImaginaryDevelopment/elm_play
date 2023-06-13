@@ -5,13 +5,9 @@ module Main exposing (..)
 import Avorion
 import Book
 import Browser
-import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Http
-import Json.Decode as D exposing (Decoder)
-import Json.Encode as Encode
 import Shared exposing (..)
 
 
@@ -53,10 +49,12 @@ type Msg
     | Reset
 
 
+initialState : Avorion.Model -> Model
 initialState avorionModel =
     { counter = 0, bookModel = Book.init, display = CounterSect, avorionModel = avorionModel }
 
 
+main : Program () Model Msg
 main =
     Browser.element { init = init, view = view, update = update, subscriptions = subscriptions }
 
