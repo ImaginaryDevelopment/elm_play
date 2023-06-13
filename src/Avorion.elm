@@ -23,9 +23,14 @@ type MenuMsg
     | GoInteractive
 
 
+type InteractiveMsg
+    = GoodSelected String
+
+
 type Msg
     = GotEconomy (HttpResult (Dict.Dict String GoodInfo))
     | MenuMsg MenuMsg
+    | InteractiveMsg InteractiveMsg
 
 
 type alias Economy =
@@ -42,12 +47,14 @@ type alias Model =
     { economy : HttpState Economy
     , display : Display
     , showDollar : Bool
+    , selected : Maybe String
+    , selections : Dict.Dict String Int
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init () =
-    ( { economy = Nothing, display = Raw, showDollar = True }, initCmd )
+    ( { economy = Nothing, display = Raw, showDollar = True, selected = Nothing, selections = Dict.empty }, initCmd )
 
 
 initCmd : Cmd Msg
@@ -77,6 +84,16 @@ update msg model =
         MenuMsg GoRaw ->
             ( { model | display = Raw }, Cmd.none )
 
+        InteractiveMsg (GoodSelected name) ->
+            let
+                next =
+                    name |> maybeValueString |> Maybe.map (\v -> model.selections |> foldSertDict (+) v 1) |> Maybe.withDefault model.selections
+
+                _ =
+                    Debug.log "Good Selected"
+            in
+            ( { model | selections = next }, Cmd.none )
+
 
 viewMenu : Display -> Html.Html Msg
 viewMenu display =
@@ -86,6 +103,33 @@ viewMenu display =
               li [] [ createMenu (display == Interactive) GoInteractive "Interactive" ]
             , li [] [ createMenu (display == Table) GoTable "Table" ]
             , li [] [ createMenu (display == Raw) GoRaw "Raw" ] -- ooo baby I like it raw - Shimmy Ya
+            ]
+        ]
+
+
+viewSelections : Dict.Dict String ( GoodInfo, Int ) -> Html Msg
+viewSelections selections =
+    div []
+        [ table []
+            [ thead []
+                [ tr []
+                    [ th [] [ text "Good" ]
+                    , th [] [ text "Count" ]
+                    , th [] [ text "Total" ]
+                    ]
+                ]
+            , tbody []
+                (selections
+                    |> Dict.toList
+                    |> List.map
+                        (\( k, ( gi, v ) ) ->
+                            tr [ gi.soldBy |> Maybe.withDefault "" |> Html.Attributes.title ]
+                                [ td [] [ text k ]
+                                , td [] [ formatInt v |> text ]
+                                , td [] [ formatMoney (v * gi.cost) |> text ]
+                                ]
+                        )
+                )
             ]
         ]
 
@@ -133,7 +177,17 @@ viewBody model e =
                 ]
 
         Interactive ->
-            div [] []
+            div []
+                [ -- text box to filter select?
+                  model.selected
+                    |> Maybe.andThen
+                        (\v ->
+                            Dict.get v e
+                                |> Maybe.map (\_ -> v)
+                        )
+                    |> (\v -> v)
+                    |> UIHelpers.selectOfItems (e |> Dict.toList |> List.map Tuple.first) (\k -> GoodSelected k |> InteractiveMsg) (\k -> ( k, k ))
+                ]
 
 
 view : Model -> Html.Html Msg
@@ -155,7 +209,7 @@ view model =
 dumpEconomy : HttpResult (Dict.Dict String GoodInfo) -> ()
 dumpEconomy httpRes =
     case httpRes of
-        Result.Ok v ->
+        Result.Ok _ ->
             Debug.log "Got economy!"
                 ()
 

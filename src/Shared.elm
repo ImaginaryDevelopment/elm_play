@@ -1,5 +1,6 @@
 module Shared exposing (..)
 
+import Dict
 import Http
 import List
 
@@ -63,3 +64,27 @@ formatInt x =
 formatMoney : Int -> String
 formatMoney x =
     "$" ++ formatInt x
+
+
+maybeValueString : String -> Maybe String
+maybeValueString x =
+    -- would love to add whitespace check at some point
+    if String.isEmpty x then
+        Nothing
+
+    else
+        Just x
+
+
+
+-- addSertDict : key -> value -> Dict.Dict key value -> Dict.Dict key value
+
+
+foldSertDict : (a -> a -> a) -> comparable -> a -> Dict.Dict comparable a -> Dict.Dict comparable a
+foldSertDict f k v dict =
+    case Dict.get k dict of
+        Nothing ->
+            Dict.insert k v dict
+
+        Just v1 ->
+            Dict.insert k (f v1 v) dict
