@@ -53,8 +53,8 @@ type Msg
     | Reset
 
 
-initialState =
-    { counter = 0, bookModel = Book.init, display = CounterSect, avorionModel = Nothing }
+initialState avorionModel =
+    { counter = 0, bookModel = Book.init, display = CounterSect, avorionModel = avorionModel }
 
 
 main =
@@ -63,7 +63,11 @@ main =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( initialState, Cmd.map AvorionMsg Avorion.initCmd )
+    let
+        ( am, aCmd ) =
+            Avorion.init ()
+    in
+    ( initialState am, Cmd.map AvorionMsg aCmd )
 
 
 updateMenu : MenuMsg -> Model -> ( Model, Cmd Msg )
@@ -113,9 +117,10 @@ update msg model =
             ( { model | avorionModel = aModel }, Cmd.map AvorionMsg aCmd )
 
         Reset ->
-            ( initialState, Cmd.map AvorionMsg Avorion.initCmd )
+            init ()
 
 
+createMenu : Bool -> MenuMsg -> String -> Html Msg
 createMenu isSelected msg title =
     if isSelected then
         a [ href "#" ] [ text title ]

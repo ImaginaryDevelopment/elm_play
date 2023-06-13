@@ -1,4 +1,4 @@
-module Avorion exposing (Economy, Model, Msg, initCmd, update, view)
+module Avorion exposing (Economy, Model, Msg, init, update, view)
 
 import Dict
 import Html exposing (..)
@@ -22,8 +22,21 @@ type alias Economy =
     Dict.Dict String GoodInfo
 
 
+type Display
+    = Raw
+    | Table
+    | Interactive
+
+
 type alias Model =
-    HttpState Economy
+    { economy : HttpState Economy
+    , display : Display
+    }
+
+
+init : () -> ( Model, Cmd Msg )
+init () =
+    ( { economy = Nothing, display = Raw }, initCmd )
 
 
 initCmd : Cmd Msg
@@ -44,12 +57,12 @@ update msg model =
                 _ =
                     dumpEconomy httpRes
             in
-            ( Just httpRes, Cmd.none )
+            ( { model | economy = Just httpRes }, Cmd.none )
 
 
 view : Model -> Html.Html Msg
 view model =
-    case model of
+    case model.economy of
         Nothing ->
             div [] [ text "No Economy loaded" ]
 
