@@ -10,8 +10,13 @@ import Html.Events exposing (onClick)
 import Http
 import Json.Decode as D
 import Json.Decode exposing (Decoder)
-import Html exposing (p)
 import Json.Encode as Encode
+
+import Shared exposing (..)
+
+import Avorion
+
+
 -- import Json.Encode
 
 -- chaining https://allo-media.net/en/tech/learning/elm/2018/02/05/chaining-http-requests-in-elm.html
@@ -26,8 +31,6 @@ type BookState
   | Started
   | Finished (Result Http.Error String)
 
-type alias HttpResult value = Result Http.Error value
-type alias HttpState value = Maybe (HttpResult value)
 
 type alias GoodInfo = {
   cost: Int
@@ -68,40 +71,20 @@ type CounterMsg
   = Increment
   | Decrement
 
-type AvorionMsg
-  = GotEconomy (HttpResult (Dict.Dict String GoodInfo))
-
 type Msg
   = MenuMsg MenuMsg
   | BookMsg BookMsg
   | CounterMsg CounterMsg
-  | AvorionMsg AvorionMsg
+  | AvorionMsg Avorion.Msg
   | Reset
 
 initialState = { counter = 0, bookState = NotStarted, display = CounterSect, gotItems = Nothing, economy = Nothing}
-initialCmd : Cmd Msg
-initialCmd =
-  Http.get {
-    url = "../json/economy.json" -- reactor assumes /src root
-    , expect = Http.expectJson (GotEconomy >> AvorionMsg ) economyDecoder
-      -- , expect = Http.expectJson GotItems (D.list (D.field "name" D.string))
-  }
 
 main =
     Browser.element { init = init, view = view, update = update, subscriptions = subscriptions }
 
 init : () -> (Model, Cmd Msg)
-init _ = ( initialState, initialCmd )
-
-dumpEconomy : (HttpResult (Dict.Dict String GoodInfo)) -> ()
-dumpEconomy httpRes =
-  case httpRes of
-      Result.Ok v ->
-        Debug.log "Got economy!"
-        ()
-      Result.Err e ->
-        Debug.log ( "Failed to get economy and/or deserialize:" ++ errorToString e)
-        ()
+init _ = ( initialState,Cmd.map AvorionMsg Avorion.initialCmd )
 
 updateMenu : MenuMsg -> Model -> (Model, Cmd Msg)
 updateMenu msg model =
@@ -126,12 +109,6 @@ updateBook msg model =
     GotBook x ->
       ({model | bookState = Finished x}, Cmd.none)
     GotItems _ -> (model, Cmd.none)
-updateAvorion : AvorionMsg -> Model -> (Model, Cmd Msg)
-updateAvorion msg model =
-  case msg of
-    GotEconomy httpRes ->
-      let _ = (dumpEconomy httpRes) in
-      ({model | economy = Just httpRes}, Cmd.none)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -143,9 +120,11 @@ update msg model =
     BookMsg bMsg ->
       updateBook bMsg model
     AvorionMsg aMsg ->
-      updateAvorion aMsg model
+      let (aModel, aCmd) = Avorion.update aMsg model.economy
+      in
+      ({model | economy = aModel}, Cmd.map AvorionMsg aCmd )
     Reset ->
-      (initialState, initialCmd)
+      (initialState, Cmd.map AvorionMsg Avorion.initialCmd)
 
 btnFetchBook : Html Msg
 btnFetchBook = button [ onClick (BookMsg GetBook) ] [ text "GetBook" ]
@@ -247,32 +226,3 @@ getBookStateText bs =
     Finished (Result.Ok _) -> "Finished"
     Finished (Result.Err e) -> errorToString e
 
-errorToString : Http.Error -> String
-errorToString error =
-    case error of
-        Http.BadUrl url ->
-            "The URL " ++ url ++ " was invalid"
-        Http.Timeout ->
-            "Unable to reach the server, try again"
-        Http.NetworkError ->
-            "Unable to reach the server, check your network connection"
-        Http.BadStatus 500 ->
-            "The server had a problem, try again later"
-        Http.BadStatus 400 ->
-            "Verify your information and try again"
-        Http.BadStatus _ ->
-            "Unknown error"
-        Http.BadBody errorMessage ->
-            errorMessage
-
--- https://package.elm-lang.org/packages/elm/json/latest/Json.Decode
-
-decodeGoodInfo: Decoder GoodInfo
-decodeGoodInfo =
-  D.map2 GoodInfo
-    (D.field "Cost" D.int)
-    (D.field "SoldBy" (D.maybe D.string))
-
-economyDecoder : Decoder (Dict.Dict String GoodInfo)
-economyDecoder =
-  D.dict decodeGoodInfo
