@@ -1,4 +1,4 @@
-module Avorion exposing (Msg, Model, initialCmd, update)
+module Avorion exposing (Msg, Model, Economy, initCmd, update, view)
 
 import Dict
 
@@ -6,6 +6,7 @@ import Json.Decode as D
 import Json.Decode exposing (Decoder)
 import Json.Encode as Encode
 import Http
+import Html exposing (..)
 
 import Shared exposing (..)
 
@@ -20,8 +21,8 @@ type alias Economy = Dict.Dict String GoodInfo
 
 type alias Model = HttpState Economy
 
-initialCmd : Cmd Msg
-initialCmd =
+initCmd : Cmd Msg
+initCmd =
   Http.get {
     url = "../json/economy.json" -- reactor assumes /src root
     , expect = Http.expectJson GotEconomy economyDecoder
@@ -34,6 +35,20 @@ update msg model =
     GotEconomy httpRes ->
       let _ = (dumpEconomy httpRes) in
       (Just httpRes, Cmd.none)
+
+view : Model -> Html.Html Msg
+view model =
+  case model of
+      Nothing ->
+        div [] [ text "No Economy loaded"]
+      Just (Err e) -> div [] [errorToString e |> text]
+      Just (Ok ec) ->
+        div [] [
+          pre [] [ -- it appears there's no reflection in elm?
+            Encode.encode 0 (encodeEconomy ec)
+            |> text
+          ]
+        ]
 
 dumpEconomy : (HttpResult (Dict.Dict String GoodInfo)) -> ()
 dumpEconomy httpRes =
@@ -52,6 +67,11 @@ encodeGoodInfo gi =
     , ("soldBy", gi.soldBy |> Maybe.withDefault "" |> Encode.string)
     ]
 -- https://package.elm-lang.org/packages/elm/json/latest/Json.Decode
+
+
+encodeEconomy : Economy -> Encode.Value
+encodeEconomy ec = -- https://package.elm-lang.org/packages/elm/json/latest/Json.Encode
+  Encode.dict identity encodeGoodInfo ec
 
 decodeGoodInfo: Decoder GoodInfo
 decodeGoodInfo =
