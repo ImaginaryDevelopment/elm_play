@@ -9,6 +9,7 @@ import Html.Events exposing (onClick)
 import Http
 import Json.Decode as D
 import Json.Decode exposing (Decoder)
+-- import Json.Encode
 
 -- chaining https://allo-media.net/en/tech/learning/elm/2018/02/05/chaining-http-requests-in-elm.html
 
@@ -17,38 +18,56 @@ type BookState
   | Started
   | Finished (Result Http.Error String)
 
-type alias Model =
-  { counter : Int
-    , bookState: BookState
-    -- , gettingBook : Bool
-    -- , gotBookResult : Maybe (Result Http.Error String)
-    , gotItems: Maybe (Result Http.Error (List String))
-  }
+type alias HttpResult value = Result Http.Error value
+type alias HttpState value = Maybe (HttpResult value)
 
 type alias GoodInfo = {
   cost: Int
   , soldBy: String
   }
 
+type alias Economy = Dict.Dict String GoodInfo
+
+type alias Model =
+  { counter : Int
+    , bookState: BookState
+    -- , gettingBook : Bool
+    -- , gotBookResult : Maybe (Result Http.Error String)
+    , gotItems: HttpState (List String)
+    , economy: HttpState Economy
+  }
+
 type Msg
   = GetBook
-  | GotBook (Result Http.Error String)
-  | GotItems (Result Http.Error (List String))
-  | GotEconomy (Result Http.Error (Dict.Dict String GoodInfo))
+  | GotBook (HttpResult String)
+  | GotItems (HttpResult (List String))
+  | GotEconomy (HttpResult (Dict.Dict String GoodInfo))
   | Increment
   | Decrement
   | Reset
-initialState = { counter = 0, bookState = NotStarted, gotItems = Nothing }
+
+initialState = { counter = 0, bookState = NotStarted, gotItems = Nothing, economy = Nothing}
 initialCmd = Http.get {
-  url = "json/economy.json"
+  url = "../json/economy.json" -- reactor assumes /src root
   , expect = Http.expectJson GotEconomy economyDecoder
     -- , expect = Http.expectJson GotItems (D.list (D.field "name" D.string))
   }
+
 main =
     Browser.element { init = init, view = view, update = update, subscriptions = subscriptions }
 
 init : () -> (Model, Cmd Msg)
 init _ = ( initialState, initialCmd )
+
+dumpEconomy : (HttpResult (Dict.Dict String GoodInfo)) -> ()
+dumpEconomy httpRes =
+  case httpRes of
+      Result.Ok v ->
+        Debug.log "Got economy!"
+        ()
+      Result.Err e ->
+        Debug.log ( "Failed to get economy and/or deserialize:" ++ errorToString e)
+        ()
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -63,8 +82,9 @@ update msg model =
     GotBook x ->
       ({model | bookState = Finished x}, Cmd.none)
     GotItems _ -> (model, Cmd.none)
-    -- TODO: implementation
-    GotEconomy v -> (model, Cmd.none)
+    GotEconomy httpRes ->
+      let _ = (dumpEconomy httpRes) in
+      ({model | economy = Just httpRes}, Cmd.none)
     Reset ->
       (initialState, initialCmd)
 
@@ -80,7 +100,6 @@ viewBookState bs =
         div [] [  btnFetchBook
                   , text t ]
       Finished (Err e) -> div [ class "error"][ text (errorToString e)] -- https://elmprogramming.com/model-view-update-part-2.html
-
 
 view : Model -> Html Msg
 view model =
