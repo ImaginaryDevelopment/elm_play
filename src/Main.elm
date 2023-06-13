@@ -3,7 +3,7 @@ module Main exposing (..)
 import Dict
 
 import Browser
-import Html exposing (Html, button, div, text)
+import Html exposing (Html, button, div, text, ul, li, a)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Http
@@ -12,6 +12,11 @@ import Json.Decode exposing (Decoder)
 -- import Json.Encode
 
 -- chaining https://allo-media.net/en/tech/learning/elm/2018/02/05/chaining-http-requests-in-elm.html
+
+type AppSection
+  = CounterSect
+  | BookSect
+  | AvorSect
 
 type BookState
   = NotStarted
@@ -30,27 +35,42 @@ type alias Economy = Dict.Dict String GoodInfo
 
 type alias Model =
   { counter : Int
+    , display: AppSection
     , bookState: BookState
     -- , gettingBook : Bool
     -- , gotBookResult : Maybe (Result Http.Error String)
     , gotItems: HttpState (List String)
     , economy: HttpState Economy
   }
-
-type Msg
+type MenuMsg
+  = GoCounter
+  | GoBook
+  | GoAvorion
+type BookMsg
   = GetBook
   | GotBook (HttpResult String)
   | GotItems (HttpResult (List String))
-  | GotEconomy (HttpResult (Dict.Dict String GoodInfo))
-  | Increment
+type CounterMsg
+  = Increment
   | Decrement
+
+type AvorionMsg
+  = GotEconomy (HttpResult (Dict.Dict String GoodInfo))
+
+type Msg
+  = MenuMsg MenuMsg
+  | BookMsg BookMsg
+  | CounterMsg CounterMsg
+  | AvorionMsg AvorionMsg
   | Reset
 
-initialState = { counter = 0, bookState = NotStarted, gotItems = Nothing, economy = Nothing}
-initialCmd = Http.get {
-  url = "../json/economy.json" -- reactor assumes /src root
-  , expect = Http.expectJson GotEconomy economyDecoder
-    -- , expect = Http.expectJson GotItems (D.list (D.field "name" D.string))
+initialState = { counter = 0, bookState = NotStarted, display = CounterSect, gotItems = Nothing, economy = Nothing}
+initialCmd : Cmd Msg
+initialCmd =
+  Http.get {
+    url = "../json/economy.json" -- reactor assumes /src root
+    , expect = Http.expectJson (GotEconomy >> AvorionMsg ) economyDecoder
+      -- , expect = Http.expectJson GotItems (D.list (D.field "name" D.string))
   }
 
 main =
@@ -69,27 +89,52 @@ dumpEconomy httpRes =
         Debug.log ( "Failed to get economy and/or deserialize:" ++ errorToString e)
         ()
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
+updateMenu : MenuMsg -> Model -> (Model, Cmd Msg)
+updateMenu msg model =
   case msg of
-    GetBook ->
-      Debug.log "Getting book!" -- https://riptutorial.com/elm/topic/2845/debugging
-      ({model | bookState = Started}, getBook)
+      GoCounter -> ({model | display = CounterSect}, Cmd.none)
+      GoBook -> ({model | display = BookSect}, Cmd.none)
+      GoAvorion -> ({model | display = AvorSect}, Cmd.none)
+updateCounter : CounterMsg -> Model -> (Model, Cmd Msg)
+updateCounter msg model =
+  case msg of
     Increment ->
       ({ model | counter = model.counter + 1 }, Cmd.none)
     Decrement ->
       ({ model | counter = model.counter - 1}, Cmd.none)
+
+updateBook : BookMsg -> Model -> (Model, Cmd Msg)
+updateBook msg model =
+  case msg of
+    GetBook ->
+      Debug.log "Getting book!" -- https://riptutorial.com/elm/topic/2845/debugging
+      ({model | bookState = Started}, getBook)
     GotBook x ->
       ({model | bookState = Finished x}, Cmd.none)
     GotItems _ -> (model, Cmd.none)
+updateAvorion : AvorionMsg -> Model -> (Model, Cmd Msg)
+updateAvorion msg model =
+  case msg of
     GotEconomy httpRes ->
       let _ = (dumpEconomy httpRes) in
       ({model | economy = Just httpRes}, Cmd.none)
+
+update : Msg -> Model -> (Model, Cmd Msg)
+update msg model =
+  case msg of
+    MenuMsg mMsg ->
+      updateMenu mMsg model
+    CounterMsg cMsg ->
+      updateCounter cMsg model
+    BookMsg bMsg ->
+      updateBook bMsg model
+    AvorionMsg aMsg ->
+      updateAvorion aMsg model
     Reset ->
       (initialState, initialCmd)
 
 btnFetchBook : Html Msg
-btnFetchBook = button [ onClick GetBook ] [ text "GetBook" ]
+btnFetchBook = button [ onClick (BookMsg GetBook) ] [ text "GetBook" ]
 
 viewBookState : BookState -> Html Msg
 viewBookState bs =
@@ -100,14 +145,21 @@ viewBookState bs =
         div [] [  btnFetchBook
                   , text t ]
       Finished (Err e) -> div [ class "error"][ text (errorToString e)] -- https://elmprogramming.com/model-view-update-part-2.html
+viewMenu : Model -> Html Msg
+viewMenu model =
+  div [][
+    ul [] [
+      li [] [ a [href "#", onClick (MenuMsg GoCounter)][text "Counter"]]
+    ]
+  ]
 
 view : Model -> Html Msg
 view model =
   div []
     [ div [] [ text (getBookStateText model.bookState) ]
-    , button [ onClick Decrement ] [ text "-" ]
+    , button [ onClick (CounterMsg Decrement) ] [ text "-" ]
     , div [] [ text (String.fromInt model.counter) ]
-    , button [ onClick Increment ] [ text "+" ]
+    , button [ onClick (CounterMsg Increment) ] [ text "+" ]
     , viewBookState model.bookState
     ]
 
@@ -118,7 +170,7 @@ getBook : Cmd Msg
 getBook =
   Http.get
     { url = "https://elm-lang.org/assets/public-opinion.txt"
-    , expect = Http.expectString GotBook
+    , expect = Http.expectString (GotBook>>BookMsg)
     }
 
 fetchItems : Cmd Msg
@@ -126,7 +178,7 @@ fetchItems =
   Http.post
     { url = "https://example.com/items.json"
     , body = Http.emptyBody
-    , expect = Http.expectJson GotItems (D.list (D.field "name" D.string))
+    , expect = Http.expectJson (GotItems >> BookMsg ) (D.list (D.field "name" D.string))
     }
 
 getBookStateText : BookState -> String
